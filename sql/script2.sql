@@ -1,4 +1,4 @@
--- CASE 1: ORIGINAL SCHEMA, FEW DATA
+-- CASE 2: ORIGINAL SCHEMA, MANY DATA
 
 use keyist;
 
@@ -298,66 +298,194 @@ create index user_id
 
 -- INSERT VALUES
 
+SET @num_rows_per_table = 1000;
+
 INSERT INTO keyist.oauth_client_details (client_id, resource_ids, client_secret, scope, authorized_grant_types, web_server_redirect_uri, authorities, access_token_validity, refresh_token_validity, additional_information, autoapprove) 
 	VALUES 
 	('test', 'resource-server-rest-api', '$2a$04$v8DNBoc36pw4c7b7Xyq/aeSpGneF9WciZUI9FibVz0neksUcPBXVS', 'read,write', 'password,authorization_code,refresh_token,implicit', null, 'USER', 10800, 2592000, null, null);
 
-INSERT INTO keyist.product_category (id, name) 
+-- PRODUCT CATEGORY
+drop procedure if exists populate_product_category;
+DELIMITER $$
+CREATE PROCEDURE populate_product_category(num_rows INT)
+BEGIN
+DECLARE i INT DEFAULT 0; 
+WHILE (i < num_rows / 4) DO
+    INSERT INTO keyist.product_category (name) 
 	VALUES 
-	(1, 'Kids'),
-	(2, 'School'),
-	(3, 'Free-time'),
-	(4, 'Home');
+	(CONCAT('Kids', i)),
+    (CONCAT('School', i)),
+    (CONCAT('Free-time', i)),
+    (CONCAT('Home', i));
+    SET i = i+1;
+END WHILE;
+END $$ 
+DELIMITER ;
+CALL populate_product_category(@num_rows_per_table);
 
+-- COLOR
 INSERT INTO keyist.color (id, name, hex) 
 	VALUES 
 	(1, 'red', '#ff144b'),
 	(2, 'blue', '#0047ab'),
-	(3, 'yellow', '#ffff00');
+	(3, 'yellow', '#ffff00'),
+    (4, 'green', '#7fff00'),
+    (5, 'black', '#000000'),
+    (6, 'white', '#ffffff');
 
-INSERT INTO keyist.product (id, category_id, sku, name, url, long_desc, date_created, last_updated, unlimited) 
+-- PRODUCT
+drop procedure if exists populate_product;
+DELIMITER $$
+CREATE PROCEDURE populate_product(num_rows INT)
+BEGIN
+DECLARE i INT DEFAULT 0; 
+WHILE (i < num_rows / 4) DO
+    INSERT INTO keyist.product (category_id, sku, name, url, long_desc, date_created, last_updated, unlimited) 
       VALUES 
-      (1, 1, '000-0001', 'Happy keychain', 'test', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
-      (2, 2, '000-0002', 'Safe @ school', 'test2', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
-      (3, 3, '000-0003', 'Sport and Hobbies', 'test3', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
-	(4, 4, '000-0004', 'Home Sweet Home', 'test4', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1);
+      (1, '000-0001', 'Happy keychain', 'test', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
+      (2, '000-0002', 'Safe @ school', 'test2', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
+      (3, '000-0003', 'Sport and Hobbies', 'test3', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
+      (4, '000-0004', 'Home Sweet Home', 'test4', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1);
+    SET i = i+1;
+END WHILE;
+END $$ 
+DELIMITER ;
+CALL populate_product(@num_rows_per_table);
 
-INSERT INTO keyist.product_variant (id, product_id, color_id, width, height, price, composition, cargo_price, tax_percent, sell_count, stock, live, image, thumb) 
+-- PRODUCT VARIANT
+drop procedure if exists populate_product_variant;
+DELIMITER $$
+CREATE PROCEDURE populate_product_variant(num_rows INT)
+BEGIN
+DECLARE i INT DEFAULT 0; 
+WHILE (i < num_rows / 10) DO
+	INSERT INTO keyist.product_variant (product_id, color_id, width, height, price, composition, cargo_price, tax_percent, sell_count, stock, live, image, thumb) 
     VALUES 
-    (1, 1, 1, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
-    (2, 1, 3, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
-    (3, 2, 2, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
-    (4, 3, 3, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg');
+    (1, 1, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (1, 2, '4cm', '5cm', 9.99, 'Gold 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (1, 3, '4cm', '7cm', 9.99, 'Silver 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (1, 4, '4cm', '2cm', 9.99, 'Canapa 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (2, 5, '4cm', '99cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (2, 6, '4cm', '17cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (3, 2, '4cm', '1cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (3, 3, '4cm', '10.99cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (4, 2, '4cm', '12cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (4, 4, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg');
+    SET i = i+1;
+END WHILE;
+END $$ 
+DELIMITER ;
+CALL populate_product_variant(@num_rows_per_table);
 
-INSERT INTO keyist.user (id, email, password, first_name, last_name, city, state, zip, email_verified, registration_date, phone, country, address)
+-- USER
+drop procedure if exists populate_user;
+DELIMITER $$
+CREATE PROCEDURE populate_user(num_rows INT)
+BEGIN
+DECLARE i INT DEFAULT 0; 
+WHILE (i < num_rows / 4) DO
+    INSERT INTO keyist.user (email, password, first_name, last_name, city, state, zip, email_verified, registration_date, phone, country, address)
 	VALUES
-	(1, 'user1@gmail.coms', 'MYsTRonGPasSWoRD', 'Mario', 'Rossi', 'Milan', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25'),
-	(2, 'user2@gmail.coms', 'MYsTRonGPasSWoRD', 'Mario', 'Rossi', 'Milan', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25'),
-	(3, 'user3@gmail.coms', 'MYsTRonGPasSWoRD', 'Mario', 'Rossi', 'Milan', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25'),
-	(4, 'user4@gmail.coms', 'MYsTRonGPasSWoRD', 'Mario', 'Rossi', 'Milan', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25');
+	(CONCAT(i, '@gmail.coms'), 'MYsTRonGPasSWoRD', 'Mario', 'Rossi', 'Milan', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25'),
+	(CONCAT(i, '@gmail.comt'), 'MYsTRonGPasSWoRD', 'Luigi', 'Verdi', 'Turin', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25'),
+	(CONCAT(i, '@gmail.comu'), 'MYsTRonGPasSWoRD', 'Gigi', 'Esposito', 'Naples', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25'),
+	(CONCAT(i, '@gmail.comv'), 'MYsTRonGPasSWoRD', 'Ciccio', 'Pasticcio', 'Milan', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25');
+    SET i = i+1;
+END WHILE;
+END $$ 
+DELIMITER ;
+CALL populate_user(@num_rows_per_table);
 
-INSERT INTO keyist.discount (id, code, discount_percent, status)
+-- DISCOUNT
+drop procedure if exists populate_discount;
+DELIMITER $$
+CREATE PROCEDURE populate_discount(num_rows INT)
+BEGIN
+DECLARE i INT DEFAULT 0; 
+WHILE (i < num_rows / 2) DO
+	INSERT INTO keyist.discount (code, discount_percent, status)
 	VALUES
-	(1, 'AAAAAAAAAAAAAAA00001', 50, 1),
-	(2, 'AAAAAAAAAAAAAAA00002', 30, 1);
+	(CONCAT('AAAAAAAAAAAAAAA', i), 50, 0),
+	(CONCAT('BBBBBBBBBBBBBBB', i), 30, 1);
+    SET i = i+1;
+END WHILE;
+END $$ 
+DELIMITER ;
+CALL populate_discount(@num_rows_per_table);
 
-INSERT INTO keyist.cart (id, user_id, discount_id, total_cart_price, total_cargo_price, total_price, date_created)
+-- CART
+drop procedure if exists populate_cart;
+DELIMITER $$
+CREATE PROCEDURE populate_cart(num_rows INT)
+BEGIN
+DECLARE i INT DEFAULT 0; 
+WHILE (i < num_rows / 5) DO
+	INSERT INTO keyist.cart (user_id, discount_id, total_cart_price, total_cargo_price, total_price, date_created)
 	VALUES
-	(1, 1, 1, 30.0, 30.0, 30.0, '2020-10-22 01:55:43'),
-	(2, 1, 1, 30.0, 30.0, 30.0, '2020-10-22 01:55:43'),
-	(3, 1, 2, 30.0, 30.0, 30.0, '2020-10-22 01:55:43');
+	(1, 1, 30.0, 30.0, 30.0, '2020-10-22 01:55:43'),
+	(1, 2, 30.0, 30.0, 30.0, '2020-10-22 01:55:43'),
+	(1, 3, 30.0, 30.0, 30.0, '2020-10-22 01:55:43'),
+    (2, 1, 30.0, 30.0, 30.0, '2020-10-22 01:55:43'),
+    (2, 5, 30.0, 30.0, 30.0, '2020-10-22 01:55:43');
+    SET i = i+1;
+END WHILE;
+END $$ 
+DELIMITER ;
+CALL populate_cart(@num_rows_per_table);
 
-INSERT INTO keyist.cart_item(id, cart_id, product_variant_id, amount)
+-- CART ITEM
+drop procedure if exists populate_cart_item;
+DELIMITER $$
+CREATE PROCEDURE populate_cart_item(num_rows INT)
+BEGIN
+DECLARE i INT DEFAULT 0; 
+WHILE (i < num_rows / 4) DO
+	INSERT INTO keyist.cart_item(cart_id, product_variant_id, amount)
 	VALUES 
-	(1, 1, 1, 2),
-	(2, 1, 2, 3);
+	(1, 1, 2),
+	(1, 3, 3),
+    (2, 4, 1),
+    (3, 2, 5);
+    SET i = i+1;
+END WHILE;
+END $$ 
+DELIMITER ;
+CALL populate_cart_item(@num_rows_per_table);
 
-INSERT INTO keyist.orders(id, user_id, ship_name, ship_address, billing_address, city, state, zip, country, phone, total_price, total_cargo_price, discount_id, date, shipped, cargo_firm, tracking_number)
+-- ORDERS
+drop procedure if exists populate_orders;
+DELIMITER $$
+CREATE PROCEDURE populate_orders(num_rows INT)
+BEGIN
+DECLARE i INT DEFAULT 0; 
+WHILE (i < num_rows / 4) DO
+	INSERT INTO keyist.orders(user_id, ship_name, ship_address, billing_address, city, state, zip, country, phone, total_price, total_cargo_price, discount_id, date, shipped, cargo_firm, tracking_number)
 	VALUES
-	(1, 1, 'This is a true ship name', 'Via Roma 25', 'Via Napoli 52', 'Milan', 'Italy', '99999', 'Italy', '3333333333', 30.0, 30.0, 1, '2020-10-22 01:55:43', 1, 'ZZZYYYXXX', '00001'),
-	(2, 1, 'This is a true ship name', 'Via Roma 25', 'Via Napoli 52', 'Milan', 'Italy', '99999', 'Italy', '3333333333', 30.0, 30.0, 1, '2020-10-22 01:55:43', 1, 'ZZZYYYXXX', '00001');
+	(1, 'This is a true ship name', 'Via Roma 25', 'Via Napoli 52', 'Milan', 'Italy', '99999', 'Italy', '3333333333', 30.0, 30.0, 1, '2020-10-22 01:55:43', 1, 'ZZZYYYXXX', '00001'),
+	(1, 'Madagascar letsgo', 'Via Roma 25', 'Via Napoli 52', 'Milan', 'Italy', '99999', 'Italy', '3333333333', 30.0, 30.0, 1, '2020-10-22 01:55:43', 1, 'ZZZYYYXXX', '00001'),
+    (2, 'Paramaribo ship', 'Via Roma 25', 'Via Napoli 52', 'Milan', 'Italy', '99999', 'Italy', '3333333333', 30.0, 30.0, 1, '2020-10-22 01:55:43', 1, 'ZZZYYYXXX', '00001'),
+	(3, 'New Delhi letsgo', 'Via Roma 25', 'Via Napoli 52', 'Milan', 'Italy', '99999', 'Italy', '3333333333', 30.0, 30.0, 1, '2020-10-22 01:55:43', 1, 'ZZZYYYXXX', '00001');
+    SET i = i+1;
+END WHILE;
+END $$ 
+DELIMITER ;
+CALL populate_orders(@num_rows_per_table);
 
-INSERT INTO keyist.order_detail(id, order_id, product_variant_id, amount)
+-- ORDER DETAIL
+drop procedure if exists populate_order_detail;
+DELIMITER $$
+CREATE PROCEDURE populate_order_detail(num_rows INT)
+BEGIN
+DECLARE i INT DEFAULT 0; 
+WHILE (i < num_rows / 4) DO
+	INSERT INTO keyist.order_detail(order_id, product_variant_id, amount)
 	VALUES
-	(1, 1, 1, 3),
-	(2, 2, 1, 4);
+	(1, 2, 3),
+	(1, 3, 4),
+    (2, 4, 1),
+	(3, 1, 7);
+    SET i = i+1;
+END WHILE;
+END $$ 
+DELIMITER ;
+CALL populate_order_detail(@num_rows_per_table);
