@@ -1,59 +1,29 @@
 use keyist;
 
+
+-- DROP TABLES
+
+drop table if exists cart_item;
+drop table if exists order_detail;
+drop table if exists product_variant;
 drop table if exists color;
-
-create table color
-(
-    id   int auto_increment
-        primary key,
-    name varchar(50) not null,
-    hex  varchar(50) not null,
-    constraint color_hex_uindex
-        unique (hex),
-    constraint color_name_uindex
-        unique (name)
-);
-
+drop table if exists cart;
+drop table if exists orders;
 drop table if exists discount;
-
-create table discount
-(
-    id               int auto_increment
-        primary key,
-    code             varchar(240)         not null,
-    discount_percent int                  not null,
-    status           tinyint(1) default 1 not null,
-    constraint code
-        unique (code)
-);
-
 drop table if exists oauth_access_token;
-
-create table oauth_access_token
-(
-    token_id          varchar(255) null,
-    token             mediumblob   null,
-    authentication_id varchar(255) not null
-        primary key,
-    user_name         varchar(255) null,
-    client_id         varchar(255) null,
-    authentication    mediumblob   null,
-    refresh_token     varchar(255) null
-);
-
 drop table if exists oauth_approvals;
-
-create table oauth_approvals
-(
-    userId         varchar(255)                            null,
-    clientId       varchar(255)                            null,
-    scope          varchar(255)                            null,
-    status         varchar(10)                             null,
-    expiresAt      timestamp default CURRENT_TIMESTAMP     not null on update CURRENT_TIMESTAMP,
-    lastModifiedAt timestamp not null
-);
-
 drop table if exists oauth_client_details;
+drop table if exists oauth_client_token;
+drop table if exists oauth_code;
+drop table if exists oauth_refresh_token;
+drop table if exists product;
+drop table if exists product_category;
+drop table if exists password_reset_token;
+drop table if exists verification_token;
+drop table if exists user;
+
+
+-- CREATE TABLES
 
 create table oauth_client_details
 (
@@ -71,7 +41,27 @@ create table oauth_client_details
     autoapprove             varchar(255)  null
 );
 
-drop table if exists oauth_client_token;
+create table oauth_access_token
+(
+    token_id          varchar(255) null,
+    token             mediumblob   null,
+    authentication_id varchar(255) not null
+        primary key,
+    user_name         varchar(255) null,
+    client_id         varchar(255) null,
+    authentication    mediumblob   null,
+    refresh_token     varchar(255) null
+);
+
+create table oauth_approvals
+(
+    userId         varchar(255)                            null,
+    clientId       varchar(255)                            null,
+    scope          varchar(255)                            null,
+    status         varchar(10)                             null,
+    expiresAt      timestamp default CURRENT_TIMESTAMP     not null on update CURRENT_TIMESTAMP,
+    lastModifiedAt timestamp not null
+);
 
 create table oauth_client_token
 (
@@ -83,15 +73,11 @@ create table oauth_client_token
     client_id         varchar(255) null
 );
 
-drop table if exists oauth_code;
-
 create table oauth_code
 (
     code           varchar(255) null,
     authentication mediumblob   null
 );
-
-drop table if exists oauth_refresh_token;
 
 create table oauth_refresh_token
 (
@@ -99,8 +85,6 @@ create table oauth_refresh_token
     token          mediumblob   null,
     authentication mediumblob   null
 );
-
-drop table if exists product_category;
 
 create table product_category
 (
@@ -111,7 +95,17 @@ create table product_category
         unique (name)
 );
 
-drop table if exists product;
+create table color
+(
+    id   int auto_increment
+        primary key,
+    name varchar(50) not null,
+    hex  varchar(50) not null,
+    constraint color_hex_uindex
+        unique (hex),
+    constraint color_name_uindex
+        unique (name)
+);
 
 create table product
 (
@@ -129,10 +123,36 @@ create table product
         foreign key (category_id) references product_category (id)
 );
 
-create index category_id
-    on product (category_id);
+create table user
+(
+    id                int auto_increment
+        primary key,
+    email             varchar(500)                         not null,
+    password          varchar(500)                         not null,
+    first_name        varchar(50)                          null,
+    last_name         varchar(50)                          null,
+    city              varchar(90)                          null,
+    state             varchar(20)                          null,
+    zip               varchar(12)                          null,
+    email_verified    tinyint(1) default 0                 null,
+    registration_date timestamp  default CURRENT_TIMESTAMP null,
+    phone             varchar(20)                          null,
+    country           varchar(20)                          null,
+    address           varchar(100)                         null,
+    constraint email
+        unique (email)
+);
 
-drop table if exists product_variant;
+create table discount
+(
+    id               int auto_increment
+        primary key,
+    code             varchar(240)         not null,
+    discount_percent int                  not null,
+    status           tinyint(1) default 1 not null,
+    constraint code
+        unique (code)
+);
 
 create table product_variant
 (
@@ -157,30 +177,6 @@ create table product_variant
         foreign key (product_id) references product (id)
 );
 
-drop table if exists user;
-
-create table user
-(
-    id                int auto_increment
-        primary key,
-    email             varchar(500)                         not null,
-    password          varchar(500)                         not null,
-    first_name        varchar(50)                          null,
-    last_name         varchar(50)                          null,
-    city              varchar(90)                          null,
-    state             varchar(20)                          null,
-    zip               varchar(12)                          null,
-    email_verified    tinyint(1) default 0                 null,
-    registration_date timestamp  default CURRENT_TIMESTAMP null,
-    phone             varchar(20)                          null,
-    country           varchar(20)                          null,
-    address           varchar(100)                         null,
-    constraint email
-        unique (email)
-);
-
-drop table if exists cart;
-
 create table cart
 (
     id                int auto_increment
@@ -197,14 +193,6 @@ create table cart
         foreign key (discount_id) references discount (id)
 );
 
-create index discount_id
-    on cart (discount_id);
-
-create index user_id
-    on cart (user_id);
-
-drop table if exists cart_item;
-
 create table cart_item
 (
     id                 int auto_increment
@@ -217,11 +205,6 @@ create table cart_item
     constraint product_variant_id
         foreign key (product_variant_id) references product_variant (id)
 );
-
-create index cart_id
-    on cart_item (cart_id);
-
-drop table if exists orders;
 
 create table orders
 (
@@ -249,8 +232,6 @@ create table orders
         foreign key (discount_id) references discount (id)
 );
 
-drop table if exists order_detail;
-
 create table order_detail
 (
     id                 int auto_increment
@@ -263,17 +244,6 @@ create table order_detail
     constraint product_variant_id_ibfk_1
         foreign key (product_variant_id) references product_variant (id)
 );
-
-create index order_id
-    on order_detail (order_id);
-
-create index discount_id
-    on orders (discount_id);
-
-create index user_id
-    on orders (user_id);
-
-drop table if exists password_reset_token;
 
 create table password_reset_token
 (
@@ -288,8 +258,6 @@ create table password_reset_token
         foreign key (user_id) references user (id)
 );
 
-drop table if exists verification_token;
-
 create table verification_token
 (
     id          int auto_increment
@@ -301,19 +269,93 @@ create table verification_token
         foreign key (user_id) references user (id)
 );
 
-INSERT INTO keyist.oauth_client_details (client_id, resource_ids, client_secret, scope, authorized_grant_types, web_server_redirect_uri, authorities, access_token_validity, refresh_token_validity, additional_information, autoapprove) VALUES ('test', 'resource-server-rest-api', '$2a$04$v8DNBoc36pw4c7b7Xyq/aeSpGneF9WciZUI9FibVz0neksUcPBXVS', 'read,write', 'password,authorization_code,refresh_token,implicit', null, 'USER', 10800, 2592000, null, null);
-INSERT INTO keyist.product_category (id, name) VALUES (1, 'Test');
+
+-- CREATE INDEXES
+
+create index order_id
+    on order_detail (order_id);
+
+create index discount_id
+    on orders (discount_id);
+
+create index user_id
+    on orders (user_id);
+
+create index category_id
+    on product (category_id);
+
+create index cart_id
+    on cart_item (cart_id);
+
+create index discount_id
+    on cart (discount_id);
+
+create index user_id
+    on cart (user_id);
+
+
+-- INSERT VALUES
+
+INSERT INTO keyist.oauth_client_details (client_id, resource_ids, client_secret, scope, authorized_grant_types, web_server_redirect_uri, authorities, access_token_validity, refresh_token_validity, additional_information, autoapprove) 
+	VALUES 
+	('test', 'resource-server-rest-api', '$2a$04$v8DNBoc36pw4c7b7Xyq/aeSpGneF9WciZUI9FibVz0neksUcPBXVS', 'read,write', 'password,authorization_code,refresh_token,implicit', null, 'USER', 10800, 2592000, null, null);
+
+INSERT INTO keyist.product_category (id, name) 
+	VALUES 
+	(1, 'Kids'),
+	(2, 'School'),
+	(3, 'Free-time'),
+	(4, 'Home');
+
 INSERT INTO keyist.color (id, name, hex) 
-    VALUES 
-    (1, 'red', '#ff144b'),
-    (2, 'blue', '#0047ab');
+	VALUES 
+	(1, 'red', '#ff144b'),
+	(2, 'blue', '#0047ab'),
+	(3, 'yellow', '#ffff00');
+
 INSERT INTO keyist.product (id, category_id, sku, name, url, long_desc, date_created, last_updated, unlimited) 
-    VALUES 
-    (1, 1, '000-0001', 'Test', 'test', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
-    (2, 1, '000-0002', 'Test2', 'test2', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
-    (3, 1, '000-0003', 'Test3', 'test3', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1);
+      VALUES 
+      (1, 1, '000-0001', 'Happy keychain', 'test', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
+      (2, 2, '000-0002', 'Safe @ school', 'test2', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
+      (3, 3, '000-0003', 'Sport and Hobbies', 'test3', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
+	(4, 4, '000-0004', 'Home Sweet Home', 'test4', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1);
+
 INSERT INTO keyist.product_variant (id, product_id, color_id, width, height, price, composition, cargo_price, tax_percent, sell_count, stock, live, image, thumb) 
     VALUES 
-    (1, 1, 1, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'image-url-here', 'image-url-here'),
-    (2, 2, 2, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'image-url-here', 'image-url-here'),
-    (3, 3, 2, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'image-url-here', 'image-url-here');
+    (1, 1, 1, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (2, 1, 3, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (3, 2, 2, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
+    (4, 3, 3, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg');
+
+INSERT INTO keyist.user (id, email, password, first_name, last_name, city, state, zip, email_verified, registration_date, phone, country, address)
+	VALUES
+	(1, 'user1@gmail.coms', 'MYsTRonGPasSWoRD', 'Mario', 'Rossi', 'Milan', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25'),
+	(2, 'user2@gmail.coms', 'MYsTRonGPasSWoRD', 'Mario', 'Rossi', 'Milan', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25'),
+	(3, 'user3@gmail.coms', 'MYsTRonGPasSWoRD', 'Mario', 'Rossi', 'Milan', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25'),
+	(4, 'user4@gmail.coms', 'MYsTRonGPasSWoRD', 'Mario', 'Rossi', 'Milan', 'Italy', '99999', 0, '2020-10-22 01:55:43', '3333333333', 'Italy', 'Via Roma 25');
+
+INSERT INTO keyist.discount (id, code, discount_percent, status)
+	VALUES
+	(1, 'AAAAAAAAAAAAAAA00001', 50, 1),
+	(2, 'AAAAAAAAAAAAAAA00002', 30, 1);
+
+INSERT INTO keyist.cart (id, user_id, discount_id, total_cart_price, total_cargo_price, total_price, date_created)
+	VALUES
+	(1, 1, 1, 30.0, 30.0, 30.0, '2020-10-22 01:55:43'),
+	(2, 1, 1, 30.0, 30.0, 30.0, '2020-10-22 01:55:43'),
+	(3, 1, 2, 30.0, 30.0, 30.0, '2020-10-22 01:55:43');
+
+INSERT INTO keyist.cart_item(id, cart_id, product_variant_id, amount)
+	VALUES 
+	(1, 1, 1, 2),
+	(2, 1, 2, 3);
+
+INSERT INTO keyist.orders(id, user_id, ship_name, ship_address, billing_address, city, state, zip, country, phone, total_price, total_cargo_price, discount_id, date, shipped, cargo_firm, tracking_number)
+	VALUES
+	(1, 1, 'This is a true ship name', 'Via Roma 25', 'Via Napoli 52', 'Milan', 'Italy', '99999', 'Italy', '3333333333', 30.0, 30.0, 1, '2020-10-22 01:55:43', 1, 'ZZZYYYXXX', '00001'),
+	(2, 1, 'This is a true ship name', 'Via Roma 25', 'Via Napoli 52', 'Milan', 'Italy', '99999', 'Italy', '3333333333', 30.0, 30.0, 1, '2020-10-22 01:55:43', 1, 'ZZZYYYXXX', '00001');
+
+INSERT INTO keyist.order_detail(id, order_id, product_variant_id, amount)
+	VALUES
+	(1, 1, 1, 3),
+	(2, 2, 1, 4);
