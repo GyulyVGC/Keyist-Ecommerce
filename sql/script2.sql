@@ -5,12 +5,21 @@ use keyist;
 
 -- DROP TABLES
 
+drop table if exists cart_item_2;
 drop table if exists cart_item;
+drop table if exists order_detail_2;
 drop table if exists order_detail;
+drop table if exists product_variant_2;
+drop table if exists product_variant_3;
 drop table if exists product_variant;
+drop table if exists color_2;
 drop table if exists color;
+drop table if exists cart_2;
 drop table if exists cart;
+drop table if exists orders_2;
+drop table if exists orders_3;
 drop table if exists orders;
+drop table if exists discount_2;
 drop table if exists discount;
 drop table if exists oauth_access_token;
 drop table if exists oauth_approvals;
@@ -18,10 +27,15 @@ drop table if exists oauth_client_details;
 drop table if exists oauth_client_token;
 drop table if exists oauth_code;
 drop table if exists oauth_refresh_token;
+drop table if exists product_2;
+drop table if exists product_3;
 drop table if exists product;
+drop table if exists product_category_2;
 drop table if exists product_category;
 drop table if exists password_reset_token;
 drop table if exists verification_token;
+drop table if exists user_2;
+drop table if exists user_3;
 drop table if exists user;
 
 
