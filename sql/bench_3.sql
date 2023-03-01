@@ -3,7 +3,7 @@
 use keyist;
 
 
-SET @num_iterations = 1;
+SET @num_iterations = 1000;
 
 -- Retrieve name and description of all red products featured by an height of at least 5 cm and a name starting with 'H'
 drop procedure if exists bench_products;
