@@ -1,24 +1,40 @@
 version: '3'
+
+volumes:
+  mydata:
+    driver: azure_file
+    driver_opts:
+      share_name: keyistusshare
+      storage_account_name: keyistus
+
 services:
   mysql:
     image: mysql
-    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
     container_name: mysql
     ports:
-      - '3307:3306'
+      - '3306:3306'
     environment:
       MYSQL_DATABASE: keyist
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: keyistuser
       MYSQL_PASSWORD: keyistpassword
     volumes:
-      - './sql/script.sql/:/docker-entrypoint-initdb.d/script.sql'
+      - mydata:/docker-entrypoint-initdb.d
 
-  authorization_server:
-    image: 'keyist-authorization-server:latest'
+  authorization-server:
+    image: keyistusacr.azurecr.io/keyist-authorization-server:latest
+    deploy:
+      resources:
+        limits:
+          cpus: '0.60'
+          memory: 4G
     build:
       context: ./authorization_server
-    container_name: authorization_server
+    container_name: authorization-server
     depends_on:
       - mysql
     environment:
@@ -29,20 +45,25 @@ services:
     ports:
       - '8081:8081'
 
-  resource_server:
-    image: 'keyist-resource-server:latest'
+  resource-server:
+    image: keyistusacr.azurecr.io/keyist-resource-server:latest
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 3G
     build:
       context: ./resource_server
-    container_name: resource_server
+    container_name: resource-server
     depends_on:
       - mysql
-      - authorization_server
+      - authorization-server
     environment:
       - >-
         SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/keyist?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=keyistuser
       - SPRING_DATASOURCE_PASSWORD=keyistpassword
-      - 'SECURITY_AUTH_URL=http://authorization_server:8081/oauth/check_token'
+      - 'SECURITY_AUTH_URL=http://authorization-server:8081/oauth/check_token'
       - SECURITY_AUTH_CLIENT_ID=test
       - >-
         SECURITY_AUTH_CLIENT_PASSWORD=test
@@ -50,12 +71,22 @@ services:
       - '8080:8080'
 
   client:
-    image: 'keyist-client:latest'
+    image: keyistusacr.azurecr.io/keyist-client:latest
+    deploy:
+      resources:
+        limits:
+          cpus: '0.60'
     build:
       context: ./client
     container_name: client
     depends_on: 
-      - authorization_server
-      - resource_server
+      - authorization-server
+      - resource-server
     ports:
-      - '4200:80'
+      - '80:80'
+    environment:
+      - API_URL=http://resource-server:8080
+      - AUTH_URL=http://authorization-server:8081
+
+
+
