@@ -2,6 +2,7 @@
   position: relative;
   top: 150px;
   min-height: 15vh;
+  background-color: black;
   .title {
     font-weight: bold;
     color: black;
@@ -13,7 +14,9 @@
     white-space: nowrap;
     text-align: center;
     padding: 10px;
+    background-color: black;
     .most-card {
+      background-color: black;
       display: inline-block;
       padding: 15px;
       .row {

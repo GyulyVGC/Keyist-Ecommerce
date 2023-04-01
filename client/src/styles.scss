@@ -2,9 +2,14 @@
 
 @import "./colors.scss";
 
-html,
-body,
+html {
+  background-color: $zero;
+}
+body {
+  background-color: $zero;
+}
 * {
+  background-color: $zero;
   font-family: "Montserrat", sans-serif;
 }
 

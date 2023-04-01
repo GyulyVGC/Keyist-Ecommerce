@@ -1,4 +1,6 @@
 .newly-added {
+
+  background-color: black;
   position: relative;
   top: 50px;
   min-height: 15vh;
@@ -11,9 +13,11 @@
     white-space: nowrap;
     text-align: center;
     padding: 10px;
+    background-color: black;
     .new-card {
       display: inline-block;
       padding: 15px;
+      background-color: black;
       .row {
         padding-left: 10px;
         margin: 0;
