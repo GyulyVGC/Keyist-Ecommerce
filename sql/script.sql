@@ -336,12 +336,17 @@ INSERT INTO keyist.product (id, category_id, sku, name, url, long_desc, date_cre
       (3, 3, '000-0003', 'Sport and Hobbies', 'test3', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1),
 	(4, 4, '000-0004', 'Home Sweet Home', 'test4', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s. ', '2018-05-18 09:50:48', '2020-10-22 01:55:43', 1);
 
+-- IMAGES URLS
+-- [sample.jpeg]: https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg
+-- [sample_big.jpeg]: https://user-images.githubusercontent.com/100347457/229345299-dc9455f0-7eca-4fc8-90ad-564db787fb44.jpeg
+-- [sample.png]: https://user-images.githubusercontent.com/100347457/229345453-986e9201-d0e4-4b14-a91f-0c03c924c824.png
+-- [sample_big.png]: https://user-images.githubusercontent.com/100347457/229345484-04b8a01c-d28e-4e7c-b284-d17e203cece4.png
 INSERT INTO keyist.product_variant (id, product_id, color_id, width, height, price, composition, cargo_price, tax_percent, sell_count, stock, live, image, thumb) 
     VALUES 
-    (1, 1, 1, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
-    (2, 1, 3, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
-    (3, 2, 2, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg'),
-    (4, 3, 3, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg', 'https://user-images.githubusercontent.com/100347457/220118461-c73d089f-a88e-494f-bed3-78c9860c7a6d.jpeg');
+    (1, 1, 1, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/229345484-04b8a01c-d28e-4e7c-b284-d17e203cece4.png', 'https://user-images.githubusercontent.com/100347457/229345484-04b8a01c-d28e-4e7c-b284-d17e203cece4.png'),
+    (2, 1, 3, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/229345484-04b8a01c-d28e-4e7c-b284-d17e203cece4.png', 'https://user-images.githubusercontent.com/100347457/229345484-04b8a01c-d28e-4e7c-b284-d17e203cece4.png'),
+    (3, 2, 2, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/229345484-04b8a01c-d28e-4e7c-b284-d17e203cece4.png', 'https://user-images.githubusercontent.com/100347457/229345484-04b8a01c-d28e-4e7c-b284-d17e203cece4.png'),
+    (4, 3, 3, '4cm', '10cm', 9.99, 'Copper 70%, Zinc 30%', 5, 10, 6, 1000, 1, 'https://user-images.githubusercontent.com/100347457/229345484-04b8a01c-d28e-4e7c-b284-d17e203cece4.png', 'https://user-images.githubusercontent.com/100347457/229345484-04b8a01c-d28e-4e7c-b284-d17e203cece4.png');
 
 INSERT INTO keyist.user (id, email, password, first_name, last_name, city, state, zip, email_verified, registration_date, phone, country, address)
 	VALUES
